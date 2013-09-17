@@ -57,20 +57,24 @@ tm.define("MainScene", {
         this.addChild(blockGroup);
 
         var blocks = [];//
+        for (var i = 0; i < BLOCK_NUM_Y; i++) {
+            blocks[i] = [];
+        }
 
         //ブロック初期化
         for (var i = 0; i < BLOCK_NUM_Y; ++i) {
-            blocks[i] = [];
             for (var j = 0; j < BLOCK_NUM_X; ++j) {
-                blocks[i][j] = Block().addChildTo(blockGroup);
+                blocks[j][i] = Block().addChildTo(blockGroup);
                 if (j == 0 || j == BLOCK_NUM_X - 1 || i == BLOCK_NUM_Y - 1) {
-                    blocks[i][j].color = COLOR.BROWN;//壁
+                    blocks[j][i].color = COLOR.BROWN;
                 }
                 //座標は左上ではなく中心っぽいのです ていうかサンプルの星で気づくべきだった…
                 //sprite.origin.x sprite.origin.yを設定することで左上を頂点とできるみたい
                 //xとyがあれなので反転させよう
-                blocks[i][j].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
-                blocks[i][j].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
+                // blocks[i][j].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
+                // blocks[i][j].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
+                blocks[j][i].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
+                blocks[j][i].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
             }
         }
 
@@ -125,7 +129,10 @@ tm.define("MainScene", {
                 //nextRot++;
                 nextRot++;
                 nextRot %= mino.n;
-                console.log(mino.sq[rot][3].x);
+                //console.log(mino.sq[rot][3].x);
+                for (var i = 0; i < SQS_NUM; i++) {
+                    console.log(mino.sq[nextRot][i].x, mino.sq[nextRot][i].y);
+                }
             } else if (key.getKeyDown("z")) {
                 // this.getSqs(mino, pos, rot, sqs, blocks);
                 // this.putSqs(blocks, sqs, COLOR.NONE);
@@ -168,7 +175,12 @@ tm.define("MainScene", {
         var overlap = false;
         for (var i = 0; i < SQS_NUM; i++) {
             var p = Point(pos.x + mino.sq[rot][i].x, pos.y + mino.sq[rot][i].y);
-            overlap |= blocks[p.y][p.x].color != COLOR.NONE;//問題？
+            //overlap |= p.x < 0 || p.x > BLOCK_NUM_X || p.y < 0 || p.y > BLOCK_NUM_Y || blocks[p.x][p.y].color != COLOR.NONE;//問題？
+            if (p.x < 0 || p.x > BLOCK_NUM_X - 1 || p.y < 0 || p.y > BLOCK_NUM_Y - 1) {
+                overlap |= true;
+            } else if (blocks[p.x][p.y].color != COLOR.NONE) {
+                overlap |= true;
+            }
             sqs[i] = p;
         }
         return !overlap;
@@ -176,7 +188,7 @@ tm.define("MainScene", {
 
     putSqs: function(blocks, sqs, color) {
         for (var i = 0; i < SQS_NUM; i++) {
-            blocks[sqs[i].y][sqs[i].x].color = color;
+            blocks[sqs[i].x][sqs[i].y].color = color;
         }
     },
 

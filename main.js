@@ -25,7 +25,7 @@ var SCREEN_HEIGHT   = BLOCK_NUM_Y * BLOCK_SIZE + BLOCK_NUM_Y - 1;
 var SCREEN_CENTER_X = SCREEN_WIDTH/2;
 var SCREEN_CENTER_Y = SCREEN_HEIGHT/2;
 
-var COLOR = {BROWN: 0, RED: 1, BLUE: 2, GREEN: 3, YELLOW: 4, NONE: 10};
+var COLOR = {BROWN: 0, RED: 1, ORANGE: 2, YELLOW: 3, GREEN: 4, LIGHT_BLUE: 5, BLUE: 6, PURPLE: 7, NONE: 10};
 //var TYPE = {NONE: 0, WALL: 1, BLOCK: 2};
 
 var SQS_NUM = 4;
@@ -79,13 +79,13 @@ tm.define("MainScene", {
         }
 
         var minos = [//
-            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(2, 0)], 2, COLOR.RED),//棒
-            Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.RED),//正方形
-            Mino([Point(-1, -1), Point(-1, 0), Point(0, 0), Point(1, 0)], 4, COLOR.RED),//l1
-            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(1, -1)], 4, COLOR.RED),//l2
-            Mino([Point(-1, 0), Point(0, 0), Point(0, 1), Point(1, 1)], 2, COLOR.RED),
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(2, 0)], 2, COLOR.LIGHT_BLUE),//棒
+            Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.YELLOW),//正方形
+            Mino([Point(-1, -1), Point(-1, 0), Point(0, 0), Point(1, 0)], 4, COLOR.BLUE),//l1
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(1, -1)], 4, COLOR.ORANGE),//l2
+            Mino([Point(-1, 0), Point(0, 0), Point(0, 1), Point(1, 1)], 2, COLOR.GREEN),
             Mino([Point(-1, 1), Point(0, 1), Point(0, 0), Point(1, 0)], 2, COLOR.RED),
-            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(0, 1)], 4, COLOR.RED),
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(0, 1)], 4, COLOR.PURPLE),
         ];
 
         //ミノの状態
@@ -122,6 +122,7 @@ tm.define("MainScene", {
 
             var key = app.keyboard;
 
+            //キーによる移動が早すぎ(左右)なので修正すす
             if ((fallCnt + 1) % fallCycle == 0) {
                 nextPos.y++;
             } else if (key.getKey("left")) {
@@ -234,6 +235,18 @@ tm.define("Block", {
             case COLOR.BROWN:
             case COLOR.RED:
                 h = 0; break;
+            case COLOR.ORANGE:
+                h = 30; break;
+            case COLOR.YELLOW:
+                h = 60; break;
+            case COLOR.GREEN:
+                h = 120; break;
+            case COLOR.LIGHT_BLUE:
+                h = 180; break;
+            case COLOR.BLUE:
+                h = 230; break;
+            case COLOR.PURPLE:
+                h = 280; break;
         }
         this.canvas.clearColor("hsl({0}, {1}%, 70%)".format(h, s));
     },

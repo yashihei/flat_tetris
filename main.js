@@ -75,6 +75,7 @@ tm.define("MainScene", {
         }
 
         var minos = [//
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(2, 0)], 2, COLOR.RED),
             Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.RED),
         ];
 
@@ -113,7 +114,7 @@ tm.define("MainScene", {
             var key = app.keyboard;
 
             if ((fallCnt + 1) % fallCycle == 0) {
-                nextPos.y++;
+                //nextPos.y++;
             } else if (key.getKey("left")) {
                 nextPos.x--;
             } else if (key.getKey("right")) {
@@ -121,6 +122,10 @@ tm.define("MainScene", {
             } else if (key.getKey("down")) {
                 nextPos.y++;
             } else if (key.getKeyDown("up")) {//回転
+                //nextRot++;
+                nextRot++;
+                nextRot %= mino.n;
+                console.log(mino.sq[rot][3].x);
             } else if (key.getKeyDown("z")) {
                 // this.getSqs(mino, pos, rot, sqs, blocks);
                 // this.putSqs(blocks, sqs, COLOR.NONE);
@@ -163,7 +168,7 @@ tm.define("MainScene", {
         var overlap = false;
         for (var i = 0; i < SQS_NUM; i++) {
             var p = Point(pos.x + mino.sq[rot][i].x, pos.y + mino.sq[rot][i].y);
-            overlap |= blocks[p.y][p.x].color != COLOR.NONE;
+            overlap |= blocks[p.y][p.x].color != COLOR.NONE;//問題？
             sqs[i] = p;
         }
         return !overlap;
@@ -235,7 +240,10 @@ tm.define("Mino", {
             this.sq[i] = [];
             for (var j = 0; j < SQS_NUM; j++) {
                 this.sq[i][j] = point[j];
-                this.sq[i][j] = this.rotate(this.sq[i][j]);//回転
+            }
+            for (var j = 0; j < SQS_NUM; j++) {
+                point[j] = this.rotate(point[j]);//次に代入する時は９０度回転
+                //this.sq[i][j] = this.rotate(this.sq[i][j]);//回転(これだと全部同じになってしまう)
             }
         }
     },

@@ -79,15 +79,20 @@ tm.define("MainScene", {
         }
 
         var minos = [//
-            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(2, 0)], 2, COLOR.RED),
-            Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.RED),
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(2, 0)], 2, COLOR.RED),//棒
+            Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.RED),//正方形
+            Mino([Point(-1, -1), Point(-1, 0), Point(0, 0), Point(1, 0)], 4, COLOR.RED),//l1
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(1, -1)], 4, COLOR.RED),//l2
+            Mino([Point(-1, 0), Point(0, 0), Point(0, 1), Point(1, 1)], 2, COLOR.RED),
+            Mino([Point(-1, 1), Point(0, 1), Point(0, 0), Point(1, 0)], 2, COLOR.RED),
+            Mino([Point(-1, 0), Point(0, 0), Point(1, 0), Point(0, 1)], 4, COLOR.RED),
         ];
 
         //ミノの状態
         var pos = Point(5, 1);
-        //this.mino = this.minos[tm.util.Random.randint(0, 6)];
-        var mino = minos[0];
-        //this.rot = tm.util.Random.randint(0, this.block.n);
+        var mino = minos[tm.util.Random.randint(0, 6)];
+        // var mino = minos[0];
+        // var rot = tm.util.Random.randint(0, mino.n - 1);
         var rot = 0;
         var fallCnt = 0;
         var fallCycle = 30;
@@ -118,7 +123,7 @@ tm.define("MainScene", {
             var key = app.keyboard;
 
             if ((fallCnt + 1) % fallCycle == 0) {
-                //nextPos.y++;
+                nextPos.y++;
             } else if (key.getKey("left")) {
                 nextPos.x--;
             } else if (key.getKey("right")) {
@@ -126,13 +131,11 @@ tm.define("MainScene", {
             } else if (key.getKey("down")) {
                 nextPos.y++;
             } else if (key.getKeyDown("up")) {//回転
-                //nextRot++;
                 nextRot++;
                 nextRot %= mino.n;
-                //console.log(mino.sq[rot][3].x);
-                for (var i = 0; i < SQS_NUM; i++) {
-                    console.log(mino.sq[nextRot][i].x, mino.sq[nextRot][i].y);
-                }
+                // for (var i = 0; i < SQS_NUM; i++) {
+                //     console.log(mino.sq[nextRot][i].x, mino.sq[nextRot][i].y);
+                // }
             } else if (key.getKeyDown("z")) {
                 // this.getSqs(mino, pos, rot, sqs, blocks);
                 // this.putSqs(blocks, sqs, COLOR.NONE);
@@ -154,8 +157,9 @@ tm.define("MainScene", {
                 this.putSqs(blocks, sqs, mino.color);
                 if (nextPos.y == pos.y + 1) {//次が示されているのに行けなかった場合（つまり止まった）
                     pos = Point(5, 1);
-                    mino = minos[0];
+                    mino = minos[tm.util.Random.randint(0, 6)];
                     rot = 0;
+                    // rot = tm.util.Random.randint(0, mino.n - 1);
                     fallCnt = 0;
                     fallCycle = 30;
                 }

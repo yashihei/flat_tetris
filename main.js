@@ -1,5 +1,10 @@
 /*
  * js!!!!!!!!!!!!!!!
+ * TODO:
+ * initとupdate分ける
+ * x,y反転
+ * blockinit
+ * 下のしろ
  */
 
 /*
@@ -51,7 +56,7 @@ tm.define("MainScene", {
         var blockGroup = tm.app.CanvasElement();
         this.addChild(blockGroup);
 
-        var blocks = [];
+        var blocks = [];//
 
         //ブロック初期化
         for (var i = 0; i < BLOCK_NUM_Y; ++i) {
@@ -63,22 +68,24 @@ tm.define("MainScene", {
                 }
                 //座標は左上ではなく中心っぽいのです ていうかサンプルの星で気づくべきだった…
                 //sprite.origin.x sprite.origin.yを設定することで左上を頂点とできるみたい
+                //xとyがあれなので反転させよう
                 blocks[i][j].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
                 blocks[i][j].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
             }
         }
 
-        var minos = [
+        var minos = [//
             Mino([Point(0, -1), Point(1, -1), Point(0, 0), Point(1, 0)], 1, COLOR.RED),
         ];
 
         //ミノの状態
-        var pos = Point(4, 1);
+        var pos = Point(5, 1);
         //this.mino = this.minos[tm.util.Random.randint(0, 6)];
         var mino = minos[0];
         //this.rot = tm.util.Random.randint(0, this.block.n);
         var rot = 0;
         var fallCnt = 0;
+        var fallCycle = 30;
 
         // 星スプライト
         var star = tm.app.StarShape(64, 64);
@@ -92,29 +99,37 @@ tm.define("MainScene", {
             star.y = p.y;
             // クリック or タッチ中は回転させる
             if (p.getPointing() == true) {
-                star.rotation += 15;
+                star.rotation += 35;
             }
 
             //ここからテトリス
             fallCnt++;
+
             var nextPos = Point(pos.x, pos.y);
             var nextRot = rot;
+            var sqs = [];
+            var nextSqs = [];
 
             var key = app.keyboard;
 
-            if ((fallCnt + 1) % 60 == 0) {
+            if ((fallCnt + 1) % fallCycle == 0) {
                 nextPos.y++;
-            } else if (key.getKeyDown("left")) {
+            } else if (key.getKey("left")) {
                 nextPos.x--;
-            } else if (key.getKeyDown("right")) {
+            } else if (key.getKey("right")) {
                 nextPos.x++;
-            } else if (key.getKeyDown("down")) {
+            } else if (key.getKey("down")) {
                 nextPos.y++;
             } else if (key.getKeyDown("up")) {//回転
+            } else if (key.getKeyDown("z")) {
+                // this.getSqs(mino, pos, rot, sqs, blocks);
+                // this.putSqs(blocks, sqs, COLOR.NONE);
+                // while (1) {
+                //     nextPos.y++;
+                //     if (this.getSqs(mino, nextPos, rot, nextSqs, blocks) == false) break;
+                // }
+                // this.putSqs(blocks, nextSqs, mino.color);
             }
-
-            var sqs = [];
-            var nextSqs = [];
 
             this.getSqs(mino, pos, rot, sqs, blocks);//いまいるところね
             this.putSqs(blocks, sqs, COLOR.NONE);//今いるところを黒くぬるのだっだだ
@@ -125,6 +140,13 @@ tm.define("MainScene", {
                 rot = nextRot;
             } else {
                 this.putSqs(blocks, sqs, mino.color);
+                if (nextPos.y == pos.y + 1) {//次が示されているのに行けなかった場合（つまり止まった）
+                    pos = Point(5, 1);
+                    mino = minos[0];
+                    rot = 0;
+                    fallCnt = 0;
+                    fallCycle = 30;
+                }
             }
 
             // for (var i = 0; i < SQS_NUM; i++) {
@@ -141,7 +163,7 @@ tm.define("MainScene", {
         var overlap = false;
         for (var i = 0; i < SQS_NUM; i++) {
             var p = Point(pos.x + mino.sq[rot][i].x, pos.y + mino.sq[rot][i].y);
-            overlap |= blocks[p.y][p.x].color == COLOR.BROWN;
+            overlap |= blocks[p.y][p.x].color != COLOR.NONE;
             sqs[i] = p;
         }
         return !overlap;

@@ -157,6 +157,32 @@ tm.define("MainScene", {
             } else {
                 this.putSqs(blocks, sqs, mino.color);
                 if (nextPos.y == pos.y + 1) {//次が示されているのに行けなかった場合（つまり止まった）
+                    //ライン消せる？
+                    for (var y = 0; y < BLOCK_NUM_Y - 1; y++) {
+                        var deleteFlag = true;
+                        for (var x = 1; x < BLOCK_NUM_X - 1; x++) {
+                            if (blocks[x][y].color == COLOR.NONE) {
+                                deleteFlag = false;
+                                break;
+                            }
+                        }
+                        if (deleteFlag) {
+                            // for (int k = j; k >= 1; --k) for (int i = 0; i < width; ++i) 
+                            // screen[i, k] = screen[i, k - 1];
+                            // for (var x = 1; x < BLOCK_NUM_X - 1; x++) {
+                            //     blocks[x][y].color = blocks[x][y - 1].color;
+                            //     blocks[x][y - 1].color = COLOR.NONE;
+                            // }
+                            for (var k = y; k >= 1; k--) {
+                                for (var x = 0; x < BLOCK_NUM_X - 1; x++) {
+                                    blocks[x][k].color = blocks[x][k - 1].color;
+                                }
+                            }
+                            console.log("yojo");
+                        }
+                    }
+
+                    //初期位置に置く(関数化しよう )
                     pos = Point(5, 1);
                     mino = minos[tm.util.Random.randint(0, 6)];
                     rot = 0;
@@ -247,6 +273,8 @@ tm.define("Block", {
                 h = 230; break;
             case COLOR.PURPLE:
                 h = 280; break;
+            case defalut:
+                console.log("color error");
         }
         this.canvas.clearColor("hsl({0}, {1}%, 70%)".format(h, s));
     },

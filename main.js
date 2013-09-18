@@ -138,13 +138,23 @@ tm.define("MainScene", {
                 //     console.log(mino.sq[nextRot][i].x, mino.sq[nextRot][i].y);
                 // }
             } else if (key.getKeyDown("z")) {
+                //とりあえず今の場所を黒く
                 // this.getSqs(mino, pos, rot, sqs, blocks);
                 // this.putSqs(blocks, sqs, COLOR.NONE);
                 // while (1) {
                 //     nextPos.y++;
-                //     if (this.getSqs(mino, nextPos, rot, nextSqs, blocks) == false) break;
+                //     if (this.getSqs(mino, nextPos, nextRot, nextSqs, blocks) == false) {
+                //         nextPos.y--;
+                //         this.getSqs(mino, nextPos, nextRot, nextSqs, blocks);
+                //         break;
+                //     }
                 // }
                 // this.putSqs(blocks, nextSqs, mino.color);
+                // pos = Point(5, 1);
+                // mino = minos[tm.util.Random.randint(0, 6)];
+                // rot = 0;
+                // // rot = tm.util.Random.randint(0, mino.n - 1);
+                // fallCnt = 0;
             }
 
             this.getSqs(mino, pos, rot, sqs, blocks);//いまいるところね
@@ -173,6 +183,7 @@ tm.define("MainScene", {
                             //     blocks[x][y].color = blocks[x][y - 1].color;
                             //     blocks[x][y - 1].color = COLOR.NONE;
                             // }
+                            //１つずつずらす
                             for (var k = y; k >= 1; k--) {
                                 for (var x = 0; x < BLOCK_NUM_X - 1; x++) {
                                     blocks[x][k].color = blocks[x][k - 1].color;
@@ -189,16 +200,13 @@ tm.define("MainScene", {
                     // rot = tm.util.Random.randint(0, mino.n - 1);
                     fallCnt = 0;
                     fallCycle = 30;
+                    //ゲームおバー
+                    if (!this.getSqs(mino, pos, rot, sqs, blocks)) {//おけない時
+                        this.putSqs(blocks, sqs, mino.color);
+                        console.log("yojofugaaaaaaaaaaaaaa");
+                    }
                 }
             }
-
-            // for (var i = 0; i < SQS_NUM; i++) {
-            //     nextSqs[i] = Point(pos.x + mino.sq[rot][i].x, pos.y + mino.sq[rot][i].y);
-            // }
-
-            // for (var i = 0; i < SQS_NUM; i++) {
-            //     blocks[nextSqs[i].y][nextSqs[i].x].color = COLOR.RED;
-            // }
         }
     },
 
@@ -225,18 +233,6 @@ tm.define("MainScene", {
 
     // update: function(app) {
     //this天国やよ！！！！！！１
-    //     var p = app.pointing;
-    //     // マウス位置 or タッチ位置に移動
-    //     this.star.x = p.x;
-    //     this.star.y = p.y;
-    //     // クリック or タッチ中は回転させる
-    //     if (app.pointing.getPointing() == true) {
-    //         this.star.rotation += 15;
-    //     }
-
-    //     var nextPos = Point(this.pos.X, this.pos.Y);
-    //     var nextRot = this.rot;
-
     // },
 });
 

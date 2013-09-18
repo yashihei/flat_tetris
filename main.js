@@ -40,10 +40,25 @@ tm.main(function() {
     app.fitWindow();    // 自動フィット
     
     // シーンを切り替える
-    app.replaceScene(MainScene());
+    app.replaceScene(TitleScene());
     
     // 実行
     app.run();
+});
+
+tm.define("TitleScene", {
+    superClass : "tm.app.TitleScene",
+
+    init : function() {
+        this.superInit({
+            title: "FlatTetris",
+            width : SCREEN_WIDTH,
+            height : SCREEN_HEIGHT,
+        });
+        this.onpointingstart = function() {
+            this.app.replaceScene(MainScene());
+        }
+    },
 });
 
 tm.define("MainScene", {
@@ -94,8 +109,10 @@ tm.define("MainScene", {
         // var mino = minos[0];
         // var rot = tm.util.Random.randint(0, mino.n - 1);
         var rot = 0;
-        var fallCnt = 0;
+        var cnt = 0;
         var fallCycle = 30;
+        var wait = 0;
+        //var goflag = false;
 
         // 星スプライト
         var star = tm.app.StarShape(64, 64);
@@ -113,7 +130,8 @@ tm.define("MainScene", {
             }
 
             //ここからテトリス
-            fallCnt++;
+            cnt++;
+            if (wait > 0) wait--;
 
             var nextPos = Point(pos.x, pos.y);
             var nextRot = rot;
@@ -123,12 +141,14 @@ tm.define("MainScene", {
             var key = app.keyboard;
 
             //キーによる移動が早すぎ(左右)なので修正すす
-            if ((fallCnt + 1) % fallCycle == 0) {
+            if ((cnt + 1) % fallCycle == 0) {
                 nextPos.y++;
-            } else if (key.getKey("left")) {
+            } else if (key.getKey("left") && wait == 0) { 
                 nextPos.x--;
-            } else if (key.getKey("right")) {
+                wait += 2;
+            } else if (key.getKey("right") && wait == 0) {
                 nextPos.x++;
+                wait += 2;
             } else if (key.getKey("down")) {
                 nextPos.y++;
             } else if (key.getKeyDown("up")) {//回転
@@ -200,10 +220,17 @@ tm.define("MainScene", {
                     // rot = tm.util.Random.randint(0, mino.n - 1);
                     fallCnt = 0;
                     fallCycle = 30;
+
                     //ゲームおバー
                     if (!this.getSqs(mino, pos, rot, sqs, blocks)) {//おけない時
                         this.putSqs(blocks, sqs, mino.color);
+                        for (var y = 0; y < BLOCK_NUM_Y - 1; y++) {
+                            for (var x = 1; x < BLOCK_NUM_X - 1; x++) {
+                                if (blocks[x][y].color != COLOR.NONE) blocks[x][y].color = COLOR.RED;
+                            }
+                        }
                         console.log("yojofugaaaaaaaaaaaaaa");
+                        app.replaceScene(GameOver());
                     }
                 }
             }
@@ -234,6 +261,21 @@ tm.define("MainScene", {
     // update: function(app) {
     //this天国やよ！！！！！！１
     // },
+});
+
+tm.define("GameOver", {
+    superClass : "tm.app.ResultScene",
+    init : function(time) {
+        this.superInit({
+            score: "未実装",
+            msg: "てとりすおいしい！",
+            width: SCREEN_WIDTH,
+            height: SCREEN_HEIGHT,
+        });
+    },
+    onnextscene: function() {
+        this.app.replaceScene(TitleScene());
+    },
 });
 
 tm.define("Block", {

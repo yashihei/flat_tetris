@@ -55,6 +55,18 @@ tm.define("TitleScene", {
             width : SCREEN_WIDTH,
             height : SCREEN_HEIGHT,
         });
+
+        //click start
+        var cts = tm.app.Label("CLICK START");
+        cts.x = SCREEN_WIDTH/2;
+        cts.y = SCREEN_HEIGHT/2 + 100;
+        cts.fontSize = 26;
+        cts.align = "center";
+        cts.baseline = "middle";
+        cts.width = SCREEN_WIDTH/2;
+        this.addChild(cts);
+        cts.tweener.fadeOut(500).fadeIn(1000).setLoop(true);
+
         this.onpointingstart = function() {
             this.app.replaceScene(MainScene());
         }
@@ -86,8 +98,6 @@ tm.define("MainScene", {
                 //座標は左上ではなく中心っぽいのです ていうかサンプルの星で気づくべきだった…
                 //sprite.origin.x sprite.origin.yを設定することで左上を頂点とできるみたい
                 //xとyがあれなので反転させよう
-                // blocks[i][j].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
-                // blocks[i][j].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
                 blocks[j][i].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
                 blocks[j][i].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
             }
@@ -139,6 +149,7 @@ tm.define("MainScene", {
             var nextSqs = [];
 
             var key = app.keyboard;
+            var self = this;
 
             //キーによる移動が早すぎ(左右)なので修正すす
             if ((cnt + 1) % fallCycle == 0) {
@@ -158,23 +169,16 @@ tm.define("MainScene", {
                 //     console.log(mino.sq[nextRot][i].x, mino.sq[nextRot][i].y);
                 // }
             } else if (key.getKeyDown("z")) {
-                //とりあえず今の場所を黒く
-                // this.getSqs(mino, pos, rot, sqs, blocks);
-                // this.putSqs(blocks, sqs, COLOR.NONE);
-                // while (1) {
+                // while (true) {
                 //     nextPos.y++;
-                //     if (this.getSqs(mino, nextPos, nextRot, nextSqs, blocks) == false) {
-                //         nextPos.y--;
-                //         this.getSqs(mino, nextPos, nextRot, nextSqs, blocks);
+                //     console.log("aaa");
+                //     if (!this.getSqs(mino, nextPos, rot, sqs, blocks)) {
+                //         // this.getSqs(mino, nextPos, rot, nextSqs, blocks);
+                //         // this.putSqs(blocks, nextSqs, mino.color);
+                //         fallFlag = true;
                 //         break;
                 //     }
                 // }
-                // this.putSqs(blocks, nextSqs, mino.color);
-                // pos = Point(5, 1);
-                // mino = minos[tm.util.Random.randint(0, 6)];
-                // rot = 0;
-                // // rot = tm.util.Random.randint(0, mino.n - 1);
-                // fallCnt = 0;
             }
 
             this.getSqs(mino, pos, rot, sqs, blocks);//いまいるところね
@@ -197,12 +201,6 @@ tm.define("MainScene", {
                             }
                         }
                         if (deleteFlag) {
-                            // for (int k = j; k >= 1; --k) for (int i = 0; i < width; ++i) 
-                            // screen[i, k] = screen[i, k - 1];
-                            // for (var x = 1; x < BLOCK_NUM_X - 1; x++) {
-                            //     blocks[x][y].color = blocks[x][y - 1].color;
-                            //     blocks[x][y - 1].color = COLOR.NONE;
-                            // }
                             //１つずつずらす
                             for (var k = y; k >= 1; k--) {
                                 for (var x = 0; x < BLOCK_NUM_X - 1; x++) {
@@ -213,7 +211,7 @@ tm.define("MainScene", {
                         }
                     }
 
-                    //初期位置に置く(関数化しよう )
+                    // 初期位置に置く(関数化しよう )
                     pos = Point(5, 1);
                     mino = minos[tm.util.Random.randint(0, 6)];
                     rot = 0;
@@ -259,7 +257,6 @@ tm.define("MainScene", {
     },
 
     // update: function(app) {
-    //this天国やよ！！！！！！１
     // },
 });
 

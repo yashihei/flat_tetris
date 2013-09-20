@@ -92,14 +92,16 @@ tm.define("MainScene", {
         for (var i = 0; i < BLOCK_NUM_Y; ++i) {
             for (var j = 0; j < BLOCK_NUM_X; ++j) {
                 blocks[j][i] = Block().addChildTo(blockGroup);
-                if (j == 0 || j == BLOCK_NUM_X - 1 || i == BLOCK_NUM_Y - 1) {
-                    blocks[j][i].color = COLOR.BROWN;
-                }
                 //座標は左上ではなく中心っぽいのです ていうかサンプルの星で気づくべきだった…
                 //sprite.origin.x sprite.origin.yを設定することで左上を頂点とできるみたい
                 //xとyがあれなので反転させよう
                 blocks[j][i].y = (BLOCK_SIZE + 1) * i + BLOCK_SIZE/2;
                 blocks[j][i].x = (BLOCK_SIZE + 1) * j + BLOCK_SIZE/2;
+                blocks[j][i].flag = false;
+                if (j == 0 || j == BLOCK_NUM_X - 1 || i == BLOCK_NUM_Y - 1) {
+                    blocks[j][i].color = COLOR.BROWN;
+                    blocks[j][i].flag = true;
+                }
             }
         }
 
@@ -172,7 +174,7 @@ tm.define("MainScene", {
                 // while (true) {
                 //     nextPos.y++;
                 //     console.log("aaa");
-                //     if (!this.getSqs(mino, nextPos, rot, sqs, blocks)) {
+                //     if (this.getSqs(mino, nextPos, rot, sqs, blocks)) {
                 //         // this.getSqs(mino, nextPos, rot, nextSqs, blocks);
                 //         // this.putSqs(blocks, nextSqs, mino.color);
                 //         fallFlag = true;
@@ -205,6 +207,7 @@ tm.define("MainScene", {
                             for (var k = y; k >= 1; k--) {
                                 for (var x = 0; x < BLOCK_NUM_X - 1; x++) {
                                     blocks[x][k].color = blocks[x][k - 1].color;
+                                    blocks[x][k].flag = true;
                                 }
                             }
                             console.log("yojo");
@@ -253,6 +256,7 @@ tm.define("MainScene", {
     putSqs: function(blocks, sqs, color) {
         for (var i = 0; i < SQS_NUM; i++) {
             blocks[sqs[i].x][sqs[i].y].color = color;
+            blocks[sqs[i].x][sqs[i].y].flag = true;
         }
     },
 
@@ -280,10 +284,13 @@ tm.define("Block", {
     init: function() {
         this.superInit(BLOCK_SIZE, BLOCK_SIZE);
         this.color = COLOR.NONE;
+        this.flag = false;
     },
     update: function() {
+        if (this.flag == false) return;
         if (this.color == COLOR.NONE) {
             this.canvas.clear();
+            this.flag = false;
             return;
         }
         var h, s;
@@ -312,6 +319,7 @@ tm.define("Block", {
                 console.log("color error");
         }
         this.canvas.clearColor("hsl({0}, {1}%, 70%)".format(h, s));
+        this.flag = false;
     },
 });
 

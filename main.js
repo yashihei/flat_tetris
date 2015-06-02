@@ -124,16 +124,25 @@ tm.define("MainScene", {
         var cnt = 0;
         var fallCycle = 30;
         var wait = 0;
+        var score = 0;
         //var goflag = false;
 
         // 星スプライト
         var star = tm.app.StarShape(64, 64);
         this.addChild(star);    // シーンに追加
 
+        //スコア表示用
+        var scoreLabel = tm.app.Label();
+        scoreLabel.width = SCREEN_WIDTH;
+        scoreLabel.x = 30;
+        scoreLabel.y = 50;
+        scoreLabel.fontSize = 20;
+        scoreLabel.text = "SCORE:0";
+        this.addChild(scoreLabel);
+
         this.update = function(app) {
             var p = app.pointing;
 
-            //var star = this.star;//おぶじぇくとはさんｓにょう
             star.x = p.x;
             star.y = p.y;
             // クリック or タッチ中は回転させる
@@ -183,8 +192,8 @@ tm.define("MainScene", {
                 // }
             }
 
-            this.getSqs(mino, pos, rot, sqs, blocks);//いまいるところね
-            this.putSqs(blocks, sqs, COLOR.NONE);//今いるところを黒くぬるのだっだだ
+            this.getSqs(mino, pos, rot, sqs, blocks);//現在地
+            this.putSqs(blocks, sqs, COLOR.NONE);//現在地を黒く塗る
 
             if (this.getSqs(mino, nextPos, nextRot, nextSqs, blocks)) {
                 this.putSqs(blocks, nextSqs, mino.color);
@@ -193,6 +202,7 @@ tm.define("MainScene", {
             } else {
                 this.putSqs(blocks, sqs, mino.color);
                 if (nextPos.y == pos.y + 1) {//次が示されているのに行けなかった場合（つまり止まった）
+                    var lineCnt = 0;
                     //ライン消せる？
                     for (var y = 0; y < BLOCK_NUM_Y - 1; y++) {
                         var deleteFlag = true;
@@ -210,11 +220,22 @@ tm.define("MainScene", {
                                     blocks[x][k].flag = true;
                                 }
                             }
+                            lineCnt++;
                             console.log("yojo");
                         }
                     }
+                    if (lineCnt == 1) {
+                        score += 100;
+                    } else if (lineCnt == 2) {
+                        score += 500;
+                    } else if (lineCnt == 3) {
+                        score += 1500;
+                    } else if (lineCnt) {
+                        score += 5000;
+                    }
+                    scoreLabel.text = "SCORE:" + score;
 
-                    // 初期位置に置く(関数化しよう )
+                    // 初期位置に置く(関数化しよう)
                     pos = Point(5, 1);
                     mino = minos[tm.util.Random.randint(0, 6)];
                     rot = 0;
@@ -222,7 +243,7 @@ tm.define("MainScene", {
                     fallCnt = 0;
                     fallCycle = 30;
 
-                    //ゲームおバー
+                    //ゲームオーバー
                     if (!this.getSqs(mino, pos, rot, sqs, blocks)) {//おけない時
                         this.putSqs(blocks, sqs, mino.color);
                         for (var y = 0; y < BLOCK_NUM_Y - 1; y++) {
@@ -230,8 +251,8 @@ tm.define("MainScene", {
                                 if (blocks[x][y].color != COLOR.NONE) blocks[x][y].color = COLOR.RED;
                             }
                         }
-                        console.log("yojofugaaaaaaaaaaaaaa");
-                        app.replaceScene(GameOver());
+                        console.log("yojoyojo");
+                        app.replaceScene(GameOver(score));
                     }
                 }
             }
@@ -266,9 +287,9 @@ tm.define("MainScene", {
 
 tm.define("GameOver", {
     superClass : "tm.app.ResultScene",
-    init : function(time) {
+    init : function(score) {
         this.superInit({
-            score: "未実装",
+            score: score,
             msg: "てとりすおいしい！",
             width: SCREEN_WIDTH,
             height: SCREEN_HEIGHT,
